@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: manyq
+Version: 0.0.0
+Summary: Fast quantum computer simulator for QML
+Home-page: https://entropicalabs.com
+Author: Joaquin Keller
+Author-email: joaquin@entropicalabs.io
+License: MIT
+Description: UNKNOWN
+Keywords: qubit,quantum
+Platform: UNKNOWN
