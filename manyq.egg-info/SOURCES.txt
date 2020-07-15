@@ -1,4 +1,4 @@
-README
+README.md
 setup.py
 manyq/__init__.py
 manyq/manyq.py
