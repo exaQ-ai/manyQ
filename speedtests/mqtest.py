@@ -1,14 +1,16 @@
 
-
+try: import cupy
+except: pass
 import manyq as mq 
-import numpy as np 
+# import numpy as np 
+from manyq import np
 import time, sys
 
 ftime = time.time
 
 def speed(nb_qbits, nb_circuits, repeat=1, depth=2, gpu=False, multicore = False):
-
-    params = np.pi * np.random.rand(depth, nb_qbits, nb_circuits)
+    if gpu: params = cupy.pi * cupy.random.rand(depth, nb_qbits, nb_circuits)
+    else:    params = np.pi * np.random.rand(depth, nb_qbits, nb_circuits)
     
     start_time = ftime()
     
@@ -41,12 +43,18 @@ if __name__=='__main__':
     try: depth = int( sys.argv[3])
     except: depth = 2
 
-    try: multicore = 'multicore' == sys.argv[4] 
-    except: multicore = False
+    multicore = False
+    gpu = False
+    try: 
+        multicore = 'multicore' == sys.argv[4] 
+        gpu = 'gpu' == sys.argv[4] 
+    except: pass
 
-    t = speed(nbqubits, nbcircuits, depth=depth, multicore = multicore)
+    t = speed(nbqubits, nbcircuits, depth=depth, multicore = multicore, gpu=gpu)
 
     print(f"nb qubits={nbqubits}, nb circuits={nbcircuits}, depth={depth}:")
     print(f"milliseconds {t*1000}")
     print(f"     seconds {t}")
+    if multicore: print(10*"multicore-")
+    if gpu: print(20*"gpu-")
     # print(f"     minutes {t/60}")

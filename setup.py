@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup_args = dict(
     name='manyq',
-    version='0.0.0',
+    version='0.0.1',
     description='Fast quantum computer simulator for QML',
     license='MIT',
     packages=find_packages(),
