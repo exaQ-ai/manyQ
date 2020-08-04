@@ -2,8 +2,8 @@
 try: import cupy
 except: pass
 import manyq as mq 
-# import numpy as np 
-from manyq import np
+import numpy as np 
+
 import time, sys
 
 ftime = time.time

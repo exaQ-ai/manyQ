@@ -1,1 +1,1 @@
-from .manyq import Qreg, initQreg, measureAll, makeShots, H, CX, CZ,RZ,SX,X,Z, np
+from .manyq import Qreg, initQreg, measureAll, makeShots, H, CX, CZ,RZ,SX,X,Z
