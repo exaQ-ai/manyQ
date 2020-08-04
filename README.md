@@ -1,11 +1,11 @@
 ## ManyQ
-### a fast quantum computer simulator
+#### A fast quantum computer simulator
 
-Uses SIMD, multicore and GPU to parallelize operations
+Uses SIMD, multicore and GPU to speedup computations
 
-ManyQ is optimized for quantum machine learning algorithms
+Optimized for Quantum Machine Learning algorithms
 
-ManyQ is the underlying simulator of PolyadicQML: 
+ManyQ is the underlying quantum computer simulator of PolyadicQML: 
 https://github.com/entropicalabs/polyadicQML
 
 
