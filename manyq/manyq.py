@@ -101,8 +101,9 @@ def RZ(qbit, t):
     if Qreg.multicore: 
         RZ_multicore(qbit,t)
         return
-    cost = np.cos(t/2)
-    isint = 1j*np.sin(t/2)
+    t2 = t/2
+    cost = np.cos(t2)
+    isint = 1j*np.sin(t2)
     gate00 = cost - isint
     gate11 = cost + isint
     shape = (2**qbit, 2, -1, Qreg.n)
@@ -120,11 +121,9 @@ def RZ_multicore(qbit, t):
     """ 
     optimized ( not using oneQubitGate(RZgate(t), qbit) )
     """
-    
-    cost = ne.evaluate("t/2")
-    cost = ne.evaluate('cos(t/2)')
-    
-    isint = ne.evaluate('1j*sin(t/2)')
+    t2 = t/2
+    cost = ne.evaluate('cos(t2)')
+    isint = ne.evaluate('1j*sin(t2)')
     gate00 = ne.evaluate('cost - isint')
     gate11 = ne.evaluate('cost + isint')
     shape = (2**qbit, 2, -1, Qreg.n)
