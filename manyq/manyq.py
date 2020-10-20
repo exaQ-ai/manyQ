@@ -164,6 +164,34 @@ def ZZ(q0, q1):
     Qreg.inQ, Qreg.outQ = Qreg.outQ, Qreg.inQ
 
 
+def fSIM(q0, q1,theta,phi):
+    """ 
+    As defined in arXiv:2001.08343 
+    (1, 0,          0,          0)
+    (0, cos(t),     -1j*sin(t), 0)
+    (0, -1j*sin(t), cos(t)),    0) 
+    (0, 0,          0,          exp(-1j*phi))
+    """
+    qbit0 = min(q0, q1)
+    qbit1 = max(q0, q1)
+    shape = (2**qbit0, 2, 2**(qbit1 - qbit0 - 1), 2, -1, Qreg.n)
+    Qreg.inQ.shape = shape
+    Qreg.outQ.shape = shape
+    
+    cost = np.cos(theta)
+    isint = -1j*np.sin(theta)
+
+
+    Qreg.outQ[:, 0, :, 0, :] =  Qreg.inQ[:, 0, :, 0, :]
+    Qreg.outQ[:, 0, :, 1, :] = cost  * Qreg.inQ[:, 0, :, 1, :] + isint * Qreg.inQ[:, 1, :, 0, :]
+    Qreg.outQ[:, 1, :, 0, :] = isint * Qreg.inQ[:, 0, :, 1, :] + cost  * Qreg.inQ[:, 1, :, 0, :]
+    Qreg.outQ[:, 1, :, 1, :] = np.exp(-1j*phi) * Qreg.inQ[:, 1, :, 1, :]
+
+    Qreg.inQ.shape = (-1, Qreg.n)
+    Qreg.outQ.shape = (-1, Qreg.n)
+    Qreg.inQ, Qreg.outQ = Qreg.outQ, Qreg.inQ
+
+
 def CZ(c, t):
     """ 
     diag(1,1,1,-1)
