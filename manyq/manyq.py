@@ -117,6 +117,37 @@ def RZ(qbit, t):
     Qreg.outQ.shape = (-1, Qreg.n)
     Qreg.inQ, Qreg.outQ = Qreg.outQ, Qreg.inQ
 
+def IN(qbit, t):
+    """ 
+    optimized ( not using oneQubitGate )
+    IN(t) = SX.RZ(t).SX 
+    """
+    if Qreg.multicore: 
+        IN_multicore(qbit,t)
+        return
+    t2 = t/2
+    cost = np.cos(t2)
+    sint = np.sin(t2)
+    gate00 = sint
+    gate01 = cost 
+    gate10 = cost 
+    gate11 = - sint
+    shape = (2**qbit, 2, -1, Qreg.n)
+    Qreg.inQ.shape = shape
+    Qreg.outQ.shape = shape
+
+    Qreg.outQ[:, 0, :] = (gate00 * Qreg.inQ[:, 0, :] +
+                          gate01 * Qreg.inQ[:, 1, :])
+    Qreg.outQ[:, 1, :] = (gate10 * Qreg.inQ[:, 0, :] +
+                          gate11 * Qreg.inQ[:, 1, :])
+
+    Qreg.inQ.shape = (-1, Qreg.n)
+    Qreg.outQ.shape = (-1, Qreg.n)
+    Qreg.inQ, Qreg.outQ = Qreg.outQ, Qreg.inQ
+
+def IN_multicore(qbit, t):
+    raise(NotImplemented)
+
 def RZ_multicore(qbit, t):
     """ 
     optimized ( not using oneQubitGate(RZgate(t), qbit) )
@@ -261,3 +292,53 @@ def makeShots(nbshots):
     def fun(v): return np.random.multinomial(nbshots, v)
     return numpy.apply_along_axis(fun, 0, Qreg.mQ)
 
+
+from qlang import parseqlang
+
+
+
+def runQ(qparsed, params=dict(), nbcircuits=1, nbqubits = None):
+    """
+    qparsed: qlang circuit (already parsed)
+    params:{x:np.array, t:np.array}
+    """
+
+    #*** verify if parameters are ok for qparsed circuit ****
+    _ , vector_parameters = parseqlang.parameters_from_gates(qparsed)
+    for pname, dimension in vector_parameters.items():
+        if pname not in params:
+            raise Exception(f'Vector parameter "{pname}" not provided')
+        if params[pname].shape[0] != dimension:
+            raise Exception(f"Vector parameter {pname} is of dimension {dimension} but only %d were provided"%params[pname].shape[0])
+        if len(params[pname].shape)==1:             nb_rows = 1
+        else: nb_rows =params[pname].shape[1]
+        if nbcircuits==1 and nb_rows>1: nbcircuits= nb_rows
+        elif nbcircuits != nb_rows:
+            raise Exception(f"{pname}: got {nb_rows} rows ({nbcircuits} expected)")
+    
+    #*** determine nb qubits ****
+    qbits = parseqlang.nbqubits_from_gates(qparsed)
+    if(nbqubits==None): nbqubits = qbits
+    elif nbqubits<qbits: raise Exception(f"{nbqubits} qubits asked, but {qbits} qubits are needed") 
+    
+    
+    #*** run circuit(s) with manyq ****    
+    initQreg(nbqubits,n=nbcircuits)
+    for gate in qparsed:
+        gname = gate[0]
+        gparam = gate[1]
+        qbit0 = gparam[0]
+        print(gate)
+        # print(f"qbit0: {qbit0}")
+        if gname in {"CZ","CX"}:
+            qbit1 = gparam[1]
+            # print(f"Running {gname}({qbit0},{qbit1})")
+            globals()[gname](qbit0,qbit1)
+            continue
+        pname = gparam[1][0]
+        pindex = gparam[1][1]
+        # print(f"Running {gname}({qbit0},{pname}_{pindex})")
+        globals()[gname](qbit0,params.get(pname)[pindex])
+
+
+    

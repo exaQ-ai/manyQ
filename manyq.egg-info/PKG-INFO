@@ -1,10 +1,10 @@
 Metadata-Version: 1.1
 Name: manyq
-Version: 0.0.1
+Version: 0.0.2
 Summary: Fast quantum computer simulator for Quantum Machine Learning
-Home-page: https://github.com/entropicalabs/manyQ
+Home-page: https://github.com/JoaquinKeller/manyQ
 Author: Joaquin Keller
-Author-email: joaquin@entropicalabs.io
+Author-email: joaquin.keller@gmail.com
 License: Apache 2.0
 Description: UNKNOWN
 Keywords: qubit,quantum
