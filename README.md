@@ -6,7 +6,7 @@ Uses SIMD, multicore and GPU to speedup computations
 Optimized for Quantum Machine Learning algorithms
 
 ManyQ is the underlying quantum computer simulator of PolyadicQML: 
-https://github.com/JoaquinKeller/polyadicQML
+https://github.com/exaQ-ai/polyadicQML
 
 
 ### To install 
