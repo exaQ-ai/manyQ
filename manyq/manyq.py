@@ -308,8 +308,9 @@ def runQ(qparsed, params=dict(), nbcircuits=1, nbqubits = None):
     for pname, dimension in vector_parameters.items():
         if pname not in params:
             raise Exception(f'Vector parameter "{pname}" not provided')
+        
         if params[pname].shape[0] != dimension:
-            raise Exception(f"Vector parameter {pname} is of dimension {dimension} but only %d were provided"%params[pname].shape[0])
+            raise Exception(f"Vector parameter {pname} is of dimension {dimension} but %d are provided"%params[pname].shape[0])
         if len(params[pname].shape)==1:             nb_rows = 1
         else: nb_rows =params[pname].shape[1]
         if nbcircuits==1 and nb_rows>1: nbcircuits= nb_rows
@@ -340,5 +341,5 @@ def runQ(qparsed, params=dict(), nbcircuits=1, nbqubits = None):
         # print(f"Running {gname}({qbit0},{pname}_{pindex})")
         globals()[gname](qbit0,params.get(pname)[pindex])
 
+    return Qreg.outQ
 
-    
