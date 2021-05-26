@@ -7,8 +7,10 @@ import numpy
 np = numpy
 
 class Qreg:
+    """the single instance object holding the quantum registers
+    """
     nbqubits = 2
-    n = 1  # batch size
+    n = 1  # batch size, ie the number of quantum registers
     gpu = False
     multicore = False
     inQ = np.zeros((2**nbqubits, n), dtype=np.complex)  # quantum state, input buffer 
@@ -16,7 +18,14 @@ class Qreg:
 
 
 def initQreg(nbqubits, n=1, gpu =False, multicore=False):
-    """ all qubits at ket0"""
+    """initialize all quantum registers at ket0
+
+    Args:
+        nbqubits (int): the number of qubits of all quantum registers
+        n (int, optional): the number of quantum registers. Defaults to 1.
+        gpu (bool, optional): Whether to use GPU. Defaults to False.
+        multicore (bool, optional): Whether to use multicore (all CPU-cores). Defaults to False.
+    """
     Qreg.multicore = multicore
     if Qreg.nbqubits == nbqubits and\
             Qreg.n == n and\
@@ -95,8 +104,13 @@ def twoQubitGate(gate, qbit0, qbit1):
     Qreg.inQ, Qreg.outQ = Qreg.outQ, Qreg.inQ
 
 def RZ(qbit, t):
-    """ 
-    optimized ( not using oneQubitGate(RZgate(t), qbit) )
+    """Rotates qbit by vector angle t
+    if t is a vector it rotates quantum register i by angle t[i] 
+    if t is float it rotates all quantum registers by angle t 
+
+    Args:
+        qbit (int): The qubit to be rotated
+        t (ndarray or float): vector of angles or single angle 
     """
     if Qreg.multicore: 
         RZ_multicore(qbit,t)
@@ -280,6 +294,11 @@ def CX(c, t):
 
 
 def measureAll():
+    """Measure all qubits of all quantum registers, and put the result in Qreg.mQ
+
+    Returns:
+        [type]: [description]
+    """
     Qreg.mQ = np.abs(Qreg.inQ)**2
     return Qreg.mQ
 
@@ -314,7 +333,7 @@ def runQ(qparsed, params=dict(), nbcircuits=1, nbqubits = None):
         if len(params[pname].shape)==1:             nb_rows = 1
         else: nb_rows =params[pname].shape[1]
         if nbcircuits==1 and nb_rows>1: nbcircuits= nb_rows
-        elif nbcircuits != nb_rows:
+        elif nbcircuits != nb_rows and nb_rows != 1:
             raise Exception(f"{pname}: got {nb_rows} rows ({nbcircuits} expected)")
     
     #*** determine nb qubits ****
@@ -329,7 +348,7 @@ def runQ(qparsed, params=dict(), nbcircuits=1, nbqubits = None):
         gname = gate[0]
         gparam = gate[1]
         qbit0 = gparam[0]
-        print(gate)
+        # print(gate)
         # print(f"qbit0: {qbit0}")
         if gname in {"CZ","CX"}:
             qbit1 = gparam[1]
